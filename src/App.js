@@ -71,14 +71,31 @@ const calculateWinner = squares => {
 };
 
 export default function Game() {
-  const [xIsNext, setXInNext] = useState(true);
   const [history, setHistory] = useState([Array(9).fill(null)]);
-  const currentSquares = history[history.length - 1];
+  const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = currentMove % 2 === 0;
+  const currentSquares = history[currentMove];
 
   const handlePlay = nextSquares => {
-    setHistory([...history, nextSquares]);
-    setXInNext(!xIsNext);
+    const nextHistory = [...history.slice(0, currentMove + 1), nextSquares];
+    setHistory(nextHistory);
+    setCurrentMove(nextHistory.length - 1);
   }
+
+  const jumpTo = nextMove => {
+    setCurrentMove(nextMove);
+  }
+
+  const moves = history.map((squares, move) => {
+    let description;
+
+    if (move > 0) description = `Estas en el movimiento #${move}`;
+    else description = 'Ir al inicio del juego';
+
+    return (
+      <li key={move}>{description}</li>
+    );
+  });
 
 
   return (
@@ -87,7 +104,7 @@ export default function Game() {
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div className="game-info">
-        <ol>{/*TODO*/}</ol>
+        <ol>{moves}</ol>
       </div>
     </div>
   );
